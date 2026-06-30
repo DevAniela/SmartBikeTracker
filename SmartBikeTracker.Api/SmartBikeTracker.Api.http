@@ -1,0 +1,6 @@
+@SmartBikeTracker.Api_HostAddress = http://localhost:5009
+
+GET {{SmartBikeTracker.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

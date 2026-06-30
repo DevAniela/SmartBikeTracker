@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SmartBikeTracker.Api/SmartBikeTracker.Api.csproj" />
+  <Project Path="SmartBikeTracker.Application/SmartBikeTracker.Application.csproj" />
+  <Project Path="SmartBikeTracker.Domain/SmartBikeTracker.Domain.csproj" />
+  <Project Path="SmartBikeTracker.Infrastructure/SmartBikeTracker.Infrastructure.csproj" />
+</Solution>
