@@ -4,6 +4,12 @@
         <p>Monitorizare în timp real</p>
     </header>
 
+    <!-- '| async' se abonează automat la fluxul bikes$.
+    
+    Când RxJS-ul din serviciu zice bikesSubject.next(date_noi), pipe-ul async primește datele și declanșează re-randarea interfeței (apare cardul roșu).
+    
+    Când componenta este distrusă, dă unsubscribe automat, păstrând aplicația performantă. -->
+
     @if (bikes$ | async; as bikes) {
     <div class="bike-grid">
         @for (bike of bikes; track bike.id) {

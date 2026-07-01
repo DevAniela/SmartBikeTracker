@@ -12,7 +12,8 @@ import { Bike } from '../../core/models/bike.model';
   styleUrl: './fleet-dashboard.component.scss' // 'styleUrl' (singular) specific Angular 17+
 })
 export class FleetDashboardComponent implements OnInit, OnDestroy {
-  // Păstrăm referința către fluxul de date. Convenția cere să punem '$' la finalul variabilelor Observable.
+  // Păstrăm referința către fluxul public de date din serviciu.
+  // Convenția cere să punem '$' la finalul variabilelor Observable.
   public bikes$: Observable<Bike[]>;
 
   constructor(private bikeApiService: BikeApiService) {
@@ -21,12 +22,12 @@ export class FleetDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Când componenta apare pe ecran, pornim "motorul" de polling
+    // Când componenta apare pe ecran, pornim "motorul" de polling RxJS
     this.bikeApiService.startPolling();
   }
 
   ngOnDestroy(): void {
-    // Când componenta este distrusă (ex: navigăm pe altă pagină), oprim polling-ul pentru a nu consuma resurse
+    // Când componenta este distrusă (ex: când userul pleacă de pe pagină), oprim polling-ul (timer-ul) pentru a nu consuma resurse (Memory Leak prevention)
     this.bikeApiService.stopPolling();
   }
 }

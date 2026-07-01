@@ -1,12 +1,32 @@
 ### Test GET (Aduce toate bicicletele)
 GET http://localhost:5009/api/fleet
 
-### Test POST (Actualizează bateria bicicletei)
+### Test POST (Actualizează bicicleta 1)
 POST http://localhost:5009/api/fleet/telemetry
 Content-Type: application/json
 
 {
-  "bikeId": "c229f388-7890-454c-b746-a85ddb670e7b",
-  "batteryPercentage": 10,
-  "chainRequiresMaintenance": true
+  "bikeId": "9796680f-50f2-47e8-bf61-2abace6c9c35",
+  "batteryPercentage": 55,
+  "chainRequiresMaintenance": false
+}
+
+### Test POST (Actualizează bicicleta 2)
+POST http://localhost:5009/api/fleet/telemetry
+Content-Type: application/json
+
+{
+  "bikeId": "e445da85-f71a-4302-9b6f-87948ffe8d68",
+  "batteryPercentage": 70,
+  "chainRequiresMaintenance": false
+}
+
+### Test POST (Actualizează bicicleta 3)
+POST http://localhost:5009/api/fleet/telemetry
+Content-Type: application/json
+
+{
+  "bikeId": "a383e127-17ae-4825-85c6-f2c926666143",
+  "batteryPercentage": 21,
+  "chainRequiresMaintenance": false
 }
