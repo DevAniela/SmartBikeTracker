@@ -21,10 +21,10 @@ public class UpdateBikeTelemetryUseCase
             throw new KeyNotFoundException($"Bicicleta cu ID-ul {bikeId} nu a fost găsită.");
         }
 
-        // 1. Apelăm metoda de domeniu (Logica de business pură)
+        // 1. Apelăm metoda de domeniu (logica de business)
         bike.UpdateTelemetry(batteryPercentage, chainRequiresMaintenance);
 
-        // 2. Salvăm starea modificată prin interfață (Infrastructură)
+        // 2. Salvăm starea modificată prin interfață (infrastructură)
         await _repository.UpdateAsync(bike);
     }
 }
