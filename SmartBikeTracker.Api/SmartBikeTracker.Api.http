@@ -1,6 +1,12 @@
-@SmartBikeTracker.Api_HostAddress = http://localhost:5009
+### Test GET (Aduce toate bicicletele)
+GET http://localhost:5009/api/fleet
 
-GET {{SmartBikeTracker.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Test POST (Actualizează bateria bicicletei)
+POST http://localhost:5009/api/fleet/telemetry
+Content-Type: application/json
 
-###
+{
+  "bikeId": "c229f388-7890-454c-b746-a85ddb670e7b",
+  "batteryPercentage": 10,
+  "chainRequiresMaintenance": true
+}
