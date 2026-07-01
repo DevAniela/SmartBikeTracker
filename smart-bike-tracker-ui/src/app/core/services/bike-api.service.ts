@@ -9,7 +9,7 @@ import { Bike } from '../models/bike.model';
 })
 export class BikeApiService implements OnDestroy {
     // Hardcodat pentru PoC. În producție, acesta vine din environment.ts
-    private readonly API_URL = 'http://localhost:5000/api/fleet';
+    private readonly API_URL = 'http://localhost:5009/api/fleet';
 
     // 1. Starea aplicației (State) - privată, ca să nu poată fi modificată din exterior
     private bikesSubject = new BehaviorSubject<Bike[]>([]);

@@ -1,0 +1,33 @@
+<div class="dashboard-container">
+    <header>
+        <h1>SmartBike Fleet Dashboard</h1>
+        <p>Monitorizare în timp real</p>
+    </header>
+
+    @if (bikes$ | async; as bikes) {
+    <div class="bike-grid">
+        @for (bike of bikes; track bike.id) {
+        <div class="bike-card" [class.alert-card]="bike.hasAlert">
+            <h2>{{ bike.name }}</h2>
+
+            <div class="telemetry">
+                <p>Baterie:
+                    <strong [class.text-danger]="bike.battery.isCritical">
+                        {{ bike.battery.percentage }}%
+                    </strong>
+                </p>
+                <p>Senzor Lanț:
+                    <strong [class.text-danger]="bike.chainSensor.requiresMaintenance">
+                        {{ bike.chainSensor.requiresMaintenance ? 'Avertizare' : 'Optim' }}
+                    </strong>
+                </p>
+            </div>
+        </div>
+        } @empty {
+        <p class="empty-state">Nu există biciclete înregistrate în flotă.</p>
+        }
+    </div>
+    } @else {
+    <p class="loading-state">Se încarcă datele de la senzori...</p>
+    }
+</div>
