@@ -11,8 +11,15 @@
     Când componenta este distrusă, dă unsubscribe automat, păstrând aplicația performantă. -->
 
     @if (bikes$ | async; as bikes) {
+    <div class="filter-panel">
+        <label class="filter-toggle">
+            <input type="checkbox" [checked]="showLowBatteryOnly" (change)="showLowBatteryOnly = $any($event.target).checked" />
+            <span>Afișează doar bicicletele cu bateria sub 20%</span>
+        </label>
+    </div>
+
     <div class="bike-grid">
-        @for (bike of bikes; track bike.id) {
+        @for (bike of getVisibleBikes(bikes); track bike.id) {
         <div class="bike-card" [class.alert-card]="bike.hasAlert">
             <h2>{{ bike.name }}</h2>
 

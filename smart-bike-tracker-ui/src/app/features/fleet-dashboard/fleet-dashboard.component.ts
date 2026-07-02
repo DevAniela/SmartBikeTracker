@@ -15,6 +15,7 @@ export class FleetDashboardComponent implements OnInit, OnDestroy {
   // Păstrăm referința către fluxul public de date din serviciu.
   // Convenția cere să punem '$' la finalul variabilelor Observable.
   public bikes$: Observable<Bike[]>;
+  public showLowBatteryOnly = false;
 
   constructor(private bikeApiService: BikeApiService) {
     // Conectăm UI-ul la fluxul de date din Serviciu
@@ -29,5 +30,13 @@ export class FleetDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Când componenta este distrusă (ex: când userul pleacă de pe pagină), oprim polling-ul (timer-ul) pentru a nu consuma resurse (Memory Leak prevention)
     this.bikeApiService.stopPolling();
+  }
+
+  public getVisibleBikes(bikes: Bike[]): Bike[] {
+    if (!this.showLowBatteryOnly) {
+      return bikes;
+    }
+
+    return bikes.filter((bike) => bike.battery.percentage < 20);
   }
 }
