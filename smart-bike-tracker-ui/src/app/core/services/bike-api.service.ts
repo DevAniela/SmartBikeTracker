@@ -5,18 +5,20 @@ import { switchMap, tap, catchError } from 'rxjs/operators';
 import { Bike } from '../models/bike.model';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root' // FACE SERVICIUL DISPONIBIL LA NIVEL GLOBAL (Singleton) - nu trebuie să-l importăm în module, ci doar să-l injectăm în constructorul componentelor care au nevoie de el.
 })
 export class BikeApiService implements OnDestroy {
     // Hardcodat pentru PoC. În producție, acesta vine din environment.ts
     private readonly API_URL = 'http://localhost:5009/api/fleet';
 
     // 1. BehaviorSubject: Stocăm "starea curentă". 
+    // Acesta este SUBIECTUL (Publisher)
     // Starea aplicației (State) - privată, ca să nu poată fi modificată din exterior
     // Când cineva se abonează, primește imediat ultima valoare cunoscută.
     private bikesSubject = new BehaviorSubject<Bike[]>([]);
 
     // 2. Fluxul public (Observable) la care componentele se vor abona
+    // Acesta este fluxul pe care ceilalți îl pot OBSERVA
     // Componentele au voie doar să "asculte" (Observable), nu să modifice datele direct.
     public bikes$: Observable<Bike[]> = this.bikesSubject.asObservable();
 

@@ -7,9 +7,12 @@ namespace SmartBikeTracker.Api.Controllers;
 [Route("api/[controller]")]
 public class FleetController : ControllerBase
 {
+    // Declaram dependența ca readonly (nu poate fi modificată după ce e primită)
     private readonly GetFleetStatusUseCase _getFleetStatusUseCase;
     private readonly UpdateBikeTelemetryUseCase _updateTelemetryUseCase;
 
+    // INJECȚIA: Controllerul spune "Cine mă creează pe mine, trebuie să îmi dea un IGetFleetStatusUseCase"
+    // Containerul .NET vede asta și îi "injectează" automat implementarea corectă.
     // Injectăm direct Use Case-urile. API-ul nu are nevoie să știe de Repository.
     public FleetController(GetFleetStatusUseCase getFleetStatusUseCase, UpdateBikeTelemetryUseCase updateTelemetryUseCase)
     {
@@ -19,8 +22,12 @@ public class FleetController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetFleet()
+    // "Task<IActionResult>" este promisiunea că, în viitor, vom returna un rezultat
     {
+        // Folosim dependența injectată, fără să ne pese cum a fost construită în spate
         var bikes = await _getFleetStatusUseCase.ExecuteAsync();
+        // "await" cere bicicletele de la baza de date, eliberând între timp thread-ul principal
+        // când sunt gata datele, execuția revine exact de aici
         return Ok(bikes);
     }
 
