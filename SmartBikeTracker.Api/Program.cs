@@ -1,6 +1,8 @@
 using SmartBikeTracker.Application.Interfaces;
 using SmartBikeTracker.Application.UseCases;
 using SmartBikeTracker.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using SmartBikeTracker.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,10 @@ builder.Services.AddSingleton<IBikeRepository, InMemoryBikeRepository>();
 // Înregistrăm Use Case-urile ca Transient (se creează o instanță nouă la fiecare utilizare, consum mic de memorie).
 builder.Services.AddTransient<GetFleetStatusUseCase>();
 builder.Services.AddTransient<UpdateBikeTelemetryUseCase>();
+
+// Înregistrarea bazei de date PostgreSQL în containerul de DI
+// Ori de câte ori o clasă are nevoie de SmartBikeDbContext în constructorul ei, creează-l folosind opțiunile pentru PostgreSQL (UseNpgsql) și ia parola/adresa bazei de date din fișierul appsettings.json de la cheia DefaultConnection.
+builder.Services.AddDbContext<SmartBikeDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
