@@ -18,6 +18,11 @@ public class Bike
         ChainSensor = chainSensor;
     }
 
+    // Pentru Entity Framework Core
+#pragma warning disable CS8618 // ignorăm avertismetul de null pt EF Core
+    private Bike() { }
+#pragma warning disable CS8618
+
     // metoda pt actualizarea datelor de telemetrie
     public void UpdateTelemetry(int batteryPercentage, bool chainRequiresMaintenance)
     {

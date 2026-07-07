@@ -14,6 +14,24 @@ namespace SmartBikeTracker.Infrastructure
         // crează o tabelă în PostgreSQL care va conține obiecte de tip Bike
         public DbSet<Bike> Bikes { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configurăm tabelul Bikes
+            modelBuilder.Entity<Bike>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // Îi spunem lui EF Core că Battery este deținut de Bike
+                // Se vor crea coloane precum "Battery_Percentage" în tabelul Bikes
+                entity.OwnsOne(e => e.Battery);
+
+                // La fel și pt senzorul de lanț
+                entity.OwnsOne(e => e.ChainSensor);
+            });
+        }
+
         // Urmează logica de rezervări
     }
 }
