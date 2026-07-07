@@ -23,7 +23,10 @@ builder.Services.AddControllers();
 // --- 2. DEPENDENCY INJECTION (DI) ---
 // Înregistrăm Repository-ul ca SINGLETON. 
 // Pentru că e în memorie. Dacă l-am face Transient, la fiecare request s-ar crea o listă nouă și s-ar pierde modificările.
-builder.Services.AddSingleton<IBikeRepository, InMemoryBikeRepository>();
+// builder.Services.AddSingleton<IBikeRepository, InMemoryBikeRepository>();
+
+// Clasele de tip DbContext din Entity Framework sunt concepute să fie Scoped (trăiesc doar pe durata unui singur request HTTP). Dacă l-am face Singleton, ar da eroare de tip Dependency Injection lifetime mismatch
+builder.Services.AddScoped<IBikeRepository, PostgresBikeRepository>();
 
 // Înregistrăm Use Case-urile ca Transient (se creează o instanță nouă la fiecare utilizare, consum mic de memorie).
 builder.Services.AddTransient<GetFleetStatusUseCase>();
