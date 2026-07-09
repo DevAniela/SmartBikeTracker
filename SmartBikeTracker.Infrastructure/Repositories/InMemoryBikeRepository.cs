@@ -13,13 +13,13 @@ public class InMemoryBikeRepository : IBikeRepository
         _bikes = new List<Bike>
         {
             // O bicicletă în stare perfectă
-            new Bike(Guid.NewGuid(), "Bike-001 (București Nord)", new Battery(85), new ChainSensor(false)),
+            new Bike(Guid.NewGuid(), "Bike-001 (București Nord)", Domain.Enums.BikeType.CityBike, new Battery(85), new ChainSensor(false)),
             
             // O bicicletă care va declanșa alerta de baterie critică (< 20%)
-            new Bike(Guid.NewGuid(), "Bike-002 (Universitate)", new Battery(15), new ChainSensor(false)),
+            new Bike(Guid.NewGuid(), "Bike-002 (Universitate)", Domain.Enums.BikeType.CityBike, new Battery(15), new ChainSensor(false)),
             
             // O bicicletă care va declanșa alerta de mentenanță la senzorul de lanț
-            new Bike(Guid.NewGuid(), "Bike-003 (Tineretului)", new Battery(60), new ChainSensor(true))
+            new Bike(Guid.NewGuid(), "Bike-003 (Tineretului)", Domain.Enums.BikeType.CityBike, new Battery(60), new ChainSensor(true))
         };
     }
 
