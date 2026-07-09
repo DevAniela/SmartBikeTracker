@@ -14,6 +14,9 @@ namespace SmartBikeTracker.Infrastructure
         // crează o tabelă în PostgreSQL care va conține obiecte de tip Bike
         public DbSet<Bike> Bikes { get; set; }
 
+        // Îi spunem bazei de date să creeze un tabel nou numit Reservations
+        public DbSet<Reservation> Reservations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -29,10 +32,20 @@ namespace SmartBikeTracker.Infrastructure
 
                 // La fel și pt senzorul de lanț
                 entity.OwnsOne(e => e.ChainSensor);
+
+                // Convertim BikeType (Enum) în text (String) în baza de date
+                entity.Property(e => e.Type).HasConversion<string>();
+            });
+
+            // Confirgurăm tabelul Reservations
+            modelBuilder.Entity<Reservation>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // Convertim ReservationStatus (Enum) în text (String)
+                entity.Property(e => e.Status).HasConversion<string>();
             });
         }
-
-        // Urmează logica de rezervări
     }
 }
 
