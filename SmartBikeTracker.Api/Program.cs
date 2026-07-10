@@ -32,6 +32,9 @@ builder.Services.AddScoped<IBikeRepository, PostgresBikeRepository>();
 // Containerul DI este instruit ca ori de câte ori un UseCase va cere un IReservationRepository, să îi ofere o instanță nouă a PostgresReservationRepository.
 builder.Services.AddScoped<IReservationRepository, PostgresReservationRepository>();
 
+// Când controller-ul cere un CreateReservationUseCase
+builder.Services.AddScoped<ICreateReservationUseCase, CreateReservationUseCase>();
+
 // Înregistrăm Use Case-urile ca Transient (se creează o instanță nouă la fiecare utilizare, consum mic de memorie).
 builder.Services.AddTransient<GetFleetStatusUseCase>();
 builder.Services.AddTransient<UpdateBikeTelemetryUseCase>();
