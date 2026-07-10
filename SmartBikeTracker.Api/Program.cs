@@ -28,6 +28,10 @@ builder.Services.AddControllers();
 // Clasele de tip DbContext din Entity Framework sunt concepute să fie Scoped (trăiesc doar pe durata unui singur request HTTP). Dacă l-am face Singleton, ar da eroare de tip Dependency Injection lifetime mismatch
 builder.Services.AddScoped<IBikeRepository, PostgresBikeRepository>();
 
+// Înregistrăm repository-ul pt rezervări.
+// Containerul DI este instruit ca ori de câte ori un UseCase va cere un IReservationRepository, să îi ofere o instanță nouă a PostgresReservationRepository.
+builder.Services.AddScoped<IReservationRepository, PostgresReservationRepository>();
+
 // Înregistrăm Use Case-urile ca Transient (se creează o instanță nouă la fiecare utilizare, consum mic de memorie).
 builder.Services.AddTransient<GetFleetStatusUseCase>();
 builder.Services.AddTransient<UpdateBikeTelemetryUseCase>();
