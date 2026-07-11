@@ -1,6 +1,8 @@
 using SmartBikeTracker.Application.Interfaces;
 using SmartBikeTracker.Application.UseCases;
 using SmartBikeTracker.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using SmartBikeTracker.Infrastructure;
 
 // Composition Root
 var builder = WebApplication.CreateBuilder(args);
@@ -23,13 +25,28 @@ builder.Services.AddControllers();
 // Înregistrăm Repository-ul ca SINGLETON. 
 // Pentru că e în memorie. Dacă l-am face Transient, la fiecare request s-ar crea o listă nouă și s-ar pierde modificările.
 // Astfel, starea memoriei RAM este păstrată între request-uri.
-builder.Services.AddSingleton<IBikeRepository, InMemoryBikeRepository>();
+// builder.Services.AddSingleton<IBikeRepository, InMemoryBikeRepository>();
+
+// Clasele de tip DbContext din Entity Framework sunt concepute să fie Scoped (trăiesc doar pe durata unui singur request HTTP). Dacă l-am face Singleton, ar da eroare de tip Dependency Injection lifetime mismatch
+builder.Services.AddScoped<IBikeRepository, PostgresBikeRepository>();
+
+// Înregistrăm repository-ul pt rezervări.
+// Containerul DI este instruit ca ori de câte ori un UseCase va cere un IReservationRepository, să îi ofere o instanță nouă a PostgresReservationRepository.
+builder.Services.AddScoped<IReservationRepository, PostgresReservationRepository>();
+
+// Când controller-ul cere un CreateReservationUseCase
+builder.Services.AddScoped<ICreateReservationUseCase, CreateReservationUseCase>();
 
 // Înregistrăm Use Case-urile ca Transient (se creează o instanță nouă la fiecare utilizare, consum mic de memorie).
 builder.Services.AddTransient<GetFleetStatusUseCase>();
 builder.Services.AddTransient<UpdateBikeTelemetryUseCase>();
 
 // Aici se creează instanța aplicației web
+
+// Înregistrarea bazei de date PostgreSQL în containerul de DI
+// Ori de câte ori o clasă are nevoie de SmartBikeDbContext în constructorul ei, creează-l folosind opțiunile pentru PostgreSQL (UseNpgsql) și ia parola/adresa bazei de date din fișierul appsettings.json de la cheia DefaultConnection.
+builder.Services.AddDbContext<SmartBikeDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 // --- 3. MIDDLEWARE PIPELINE ---

@@ -1,0 +1,15 @@
+.reservation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.error-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
