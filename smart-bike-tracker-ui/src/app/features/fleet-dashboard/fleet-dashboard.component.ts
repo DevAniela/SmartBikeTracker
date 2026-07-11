@@ -1,13 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { BikeApiService } from '../../core/services/bike-api.service';
 import { Bike } from '../../core/models/bike.model';
+import { ReservationDialogComponent } from './components/reservation-dialog/reservation-dialog.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-fleet-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports:  [CommonModule, MatDialogModule, MatButtonModule ],
   templateUrl: './fleet-dashboard.component.html',
   styleUrl: './fleet-dashboard.component.scss' // 'styleUrl' (singular) specific Angular 17+
 })
@@ -15,6 +18,9 @@ export class FleetDashboardComponent implements OnInit, OnDestroy {
   // Păstrăm referința către fluxul public de date din serviciu.
   // Convenția cere să punem '$' la finalul variabilelor Observable.
   public bikes$: Observable<Bike[]>;
+
+  // Injectăm MatDialog (sintaxă Angular 22)
+  private dialog = inject(MatDialog);
 
   constructor(private bikeApiService: BikeApiService) {
     // Conectăm UI-ul la fluxul de date din Serviciu
@@ -29,5 +35,19 @@ export class FleetDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Când componenta este distrusă (ex: când userul pleacă de pe pagină), oprim polling-ul (timer-ul) pentru a nu consuma resurse (Memory Leak prevention)
     this.bikeApiService.stopPolling();
+  }
+
+  public openReservationDialog(bikeId: string): void {
+    const dialogRef = this.dialog.open(ReservationDialogComponent, {
+      width: '400px',
+      data: { bikeId: bikeId } // Pasăm id-ul bicicletei către modal
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if(result) {
+        // Aici vom reîncărca lista mai târziu.
+        console.log('Rezervare creată cu succes pt bicicleta: ', bikeId);
+      }
+    });
   }
 }

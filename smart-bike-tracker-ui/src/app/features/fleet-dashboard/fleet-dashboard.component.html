@@ -27,6 +27,13 @@
                         {{ bike.chainSensor.requiresMaintenance ? 'Avertizare' : 'Optim' }}
                     </strong>
                 </p>
+
+                <div class="card-actions">
+                    <button mat-flat-button color="primary" (click)="openReservationDialog(bike.id)">
+                        Rezervare
+                    </button>
+                </div>
+
             </div>
         </div>
         } @empty {
