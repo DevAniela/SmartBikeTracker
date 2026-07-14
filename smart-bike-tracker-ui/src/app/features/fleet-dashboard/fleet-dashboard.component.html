@@ -23,6 +23,8 @@
         <div class="bike-card" [class.alert-card]="bike.hasAlert">
             <h2>{{ bike.name }}</h2>
 
+            <span class="bike-type-badge">{{ bike.type }}</span>
+
             <div class="telemetry">
                 <p>Baterie:
                     <strong [class.text-danger]="bike.battery.isCritical">
