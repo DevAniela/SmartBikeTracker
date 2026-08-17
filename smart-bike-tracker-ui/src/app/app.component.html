@@ -1,1 +1,24 @@
-<router-outlet></router-outlet>
+<!-- Bara de navigare globală -->
+<mat-toolbar color="primary" class="sticky-navbar">
+  <span class="app-title">SmartBike Tracker</span>
+  
+  <span class="spacer"></span> <!-- Împinge butoanele spre dreapta -->
+
+  <a mat-button 
+     routerLink="/" 
+     routerLinkActive="active-link" 
+     [routerLinkActiveOptions]="{exact: true}">
+    Dashboard
+  </a>
+  
+  <a mat-button 
+     routerLink="/map" 
+     routerLinkActive="active-link">
+    Hartă
+  </a>
+</mat-toolbar>
+
+<!-- Zona unde se încarcă paginile (Dashboard sau Map) -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
