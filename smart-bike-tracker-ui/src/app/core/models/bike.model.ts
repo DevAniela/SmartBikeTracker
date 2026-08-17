@@ -10,4 +10,6 @@ export interface Bike {
         requiresMaintenance: boolean;
     };
     hasAlert: boolean;
+    latitude: number;
+    longitude: number;
 }
