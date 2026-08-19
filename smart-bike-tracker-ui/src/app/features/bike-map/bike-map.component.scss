@@ -1,5 +1,5 @@
 .map-container {
-  height: calc(100vh - 64px); // Pt un header de 64px (sau 100vh fără header)
+  height: 100%;
   width: 100%;
 }
 
@@ -39,7 +39,7 @@
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: 999px;
     cursor: pointer;
     font-weight: 500;
     font-family: Roboto, "Helvetica Neue", sans-serif;

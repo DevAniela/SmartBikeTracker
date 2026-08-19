@@ -21,7 +21,6 @@
 
 /* Oprim marginile aplicației să se lipească de marginea ecranului */
 .main-content {
-  padding: 16px;
   height: calc(100vh - 64px); /* Scădem înălțimea toolbar-ului (aprox 64px) */
   box-sizing: border-box;
 }
