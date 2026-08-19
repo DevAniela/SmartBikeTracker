@@ -3,16 +3,19 @@ import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import * as L from 'leaflet';
 import { BikeApiService } from '../../core/services/bike-api.service';
 import { Bike } from '../../core/models/bike.model';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ReservationDialogComponent } from '../fleet-dashboard/components/reservation-dialog/reservation-dialog.component';
 
 @Component({
   selector: 'app-bike-map',
   standalone: true,
-  imports: [LeafletModule],
+  imports: [LeafletModule, MatDialogModule],
   templateUrl: './bike-map.component.html',
   styleUrls: ['./bike-map.component.scss']
 })
 export class BikeMapComponent implements OnInit {
   private bikeApiService = inject(BikeApiService);
+  private dialog = inject(MatDialog); // Injectăm modalul de rezervare
 
   // Configurația de bază pentru Leaflet
   public mapOptions: L.MapOptions = {
@@ -29,14 +32,13 @@ export class BikeMapComponent implements OnInit {
   // Acest array va conține markerii
   public layers: L.Layer[] = [];
 
-  // Pictograma pt bicicletă
-  private bikeIcon = L.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', // Icon default momentan
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+  // Pictograma pt bicicletă (doar HTML și CSS)
+  private bikeIcon = L.divIcon({
+    html: `<div class="bike-marker">🚲</div>`,
+    className: 'custom-leaflet-icon',
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -18], // De unde apare popup-ul față de centrul iconiței
   });
 
   ngOnInit(): void {
@@ -64,7 +66,41 @@ export class BikeMapComponent implements OnInit {
         icon: this.bikeIcon,
         title: bike.name
       });
+
+      // Creăm un element HTML de la zero pt popup
+      const popupContainer = document.createElement('div');
+      popupContainer.className = 'bike-popup-content';
+      
+      // Setăm conținutul (nume, baterie, buton)
+      popupContainer.innerHTML = `<h3 style="margin: 0 0 8px 0;">${bike.name}</h3>
+      <p style="margin: 0 0 12px 0;">Baterie: <strong>${bike.battery.percentage}%</strong></p>
+      <button class="mat-primary-like-btn" id="btn-reserve-${bike.id}">Rezervă Bicicleta</button>`;
+      
+      // Legăm evenimentul de click de metoda din Angular
+      const reserveBtn = popupContainer.querySelector(`#btn-reserve-${bike.id}`);
+      if (reserveBtn) {
+        reserveBtn.addEventListener('click', () => {
+          this.openReservationDialog(bike.id);
+        });
+      }
+      
+      // Atașăm popup-ul la marker
+      marker.bindPopup(popupContainer);
       return marker;
+    });
+  }
+
+  // Metoda care deschide modalul
+  private openReservationDialog(bikeId: string): void {
+    const dialogRef = this.dialog.open(ReservationDialogComponent, {
+      width: '400px',
+      data: { bikeId: bikeId }
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        console.log('Rezervare creată pentru bicicleta ', bikeId);
+      }
     });
   }
 

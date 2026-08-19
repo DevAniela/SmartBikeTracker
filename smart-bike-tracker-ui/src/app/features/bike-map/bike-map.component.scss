@@ -2,3 +2,52 @@
   height: calc(100vh - 64px); // Pt un header de 64px (sau 100vh fără header)
   width: 100%;
 }
+
+// CSS pentru pictograma bicicletei de pe hartă
+// ::ng-deep este necesar aici pentru că Leaflet creează elementele DOM în mod dinamic, în afara izolației standard de CSS a componentei Angular
+::ng-deep .custom-leaflet-icon {
+  background: transparent;
+  border: none;
+}
+
+::ng-deep .bike-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: white;
+  border: 3px solid #00acc1; /* Culoarea cyan primară */
+  border-radius: 50%;
+  font-size: 20px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+    background-color: #e0f7fa;
+  }
+}
+
+// CSS pentru pop-up și butonul din interior
+::ng-deep .bike-popup-content {
+  text-align: center;
+  min-width: 150px;
+
+  .mat-primary-like-btn {
+    background-color: #006064; /* Cyan */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    transition: background-color 0.2s;
+    width: 100%;
+
+    &:hover {
+      background-color: #00838f;
+    }
+  }
+}
