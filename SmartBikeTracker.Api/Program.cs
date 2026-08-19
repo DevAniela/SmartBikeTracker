@@ -43,6 +43,7 @@ builder.Services.AddScoped<ICreateReservationUseCase, CreateReservationUseCase>(
 // Înregistrăm Use Case-urile ca Transient (se creează o instanță nouă la fiecare utilizare, consum mic de memorie).
 builder.Services.AddTransient<GetFleetStatusUseCase>();
 builder.Services.AddTransient<UpdateBikeTelemetryUseCase>();
+builder.Services.AddTransient<GetBikeBookedIntervalsUseCase>();
 
 // Aici se creează instanța aplicației web
 

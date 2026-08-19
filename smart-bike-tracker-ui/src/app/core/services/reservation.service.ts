@@ -9,6 +9,12 @@ export interface CreateReservationRequest {
     endTime: string; // ISO String
 }
 
+// Interfața pt ce primim de la sever
+export interface BookedInterval {
+    startTime: string;
+    endTime: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -20,5 +26,10 @@ export class ReservationService {
     public createReservation(request: CreateReservationRequest) : Observable<any> {
         // Returnează un flux pe care componenta îl va consuma
         return this.http.post(this.API_URL, request);
+    }
+
+    // Apelăm endpoint-ul din ReservationsController
+    public getBookedIntervals(bikeId: string): Observable<BookedInterval[]> {
+        return this.http.get<BookedInterval[]>(`${this.API_URL}/bike/${bikeId}`);
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartBikeTracker.Api.Controllers.DTOs;
 using SmartBikeTracker.Application.Interfaces;
+using SmartBikeTracker.Application.UseCases; // Adăugat pt GetBikeBookedIntervalsUseCase
 
 namespace SmartBikeTracker.Api.Controllers;
 
@@ -10,11 +11,13 @@ namespace SmartBikeTracker.Api.Controllers;
 public class ReservationsController : ControllerBase
 {
     private readonly ICreateReservationUseCase _createReservationUseCase;
+    private readonly GetBikeBookedIntervalsUseCase _getBookedIntervalsUseCase;
 
-    // Injectăm UseCase-ul
-    public ReservationsController(ICreateReservationUseCase createReservationUseCase)
+    // Injectăm ambele Use Case-uri
+    public ReservationsController(ICreateReservationUseCase createReservationUseCase, GetBikeBookedIntervalsUseCase getBookedIntervalsUseCase)
     {
         _createReservationUseCase = createReservationUseCase;
+        _getBookedIntervalsUseCase = getBookedIntervalsUseCase;
     }
 
     [HttpPost]
@@ -44,5 +47,13 @@ public class ReservationsController : ControllerBase
             // Prindem și excepția de validare din Domain (dacă EndTime <= StartTime)
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    // Endpoint-ul pt intervalele indisponibile
+    [HttpGet("bike/{bikeId:guid}")] // Va mapa la: GET http://localhost:5009/api/reservations/bike/{bikeId}
+    public async Task<IActionResult> GetBookedIntervals([FromRoute] Guid bikeId)
+    {
+        var intervals = await _getBookedIntervalsUseCase.ExecuteAsync(bikeId);
+        return Ok(intervals);
     }
 }
