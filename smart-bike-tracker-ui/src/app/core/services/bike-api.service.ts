@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subscription, timer, of } from 'rxjs';
-import { switchMap, tap, catchError } from 'rxjs/operators';
+import { switchMap, tap, catchError, distinctUntilChanged } from 'rxjs/operators';
 import { Bike } from '../models/bike.model';
 
 @Injectable({
@@ -32,24 +32,28 @@ export class BikeApiService implements OnDestroy {
         }
 
         // RxJS Polling Magic
-        this.pollingSubscription = timer(0, 5000).pipe(
-            // 1. timer(0, 5000): Emite o valoare IMEDIAT (0ms), apoi la fiecare 5000ms (5 secunde).
-
+        // 1. timer(0, 60000): Emite o valoare IMEDIAT (0ms), apoi la fiecare 60 secunde.
+        this.pollingSubscription = timer(0, 60000).pipe(
             // 2. switchMap: Inima polling-ului. Când timer-ul "ticăie", switchMap declanșează apelul HTTP.
-            // Dacă a trecut intervalul de 5s, dar request-ul HTTP anterior nu s-a terminat,
+            // Dacă a trecut intervalul de 60s, dar request-ul HTTP anterior nu s-a terminat,
             // switchMap anulează request-ul vechi și pornește unul nou.
-            switchMap(() => this.http.get<Bike[]>(this.API_URL)),
-
-            // 3. tap: Un "spion" (side-effect). Preia datele primite de la backend și le 
+            switchMap(() => this.http.get<Bike[]>(this.API_URL).pipe(
+                // 3. Dacă serverul pică, prindem eroarea, o logăm, și returnăm un array gol (of([])).
+                // Astfel, fluxul RxJS NU "moare" și va continua să încerce din nou.
+                catchError(error => {
+                console.error('Eroare la preluarea datelor despre flotă:', error);
+                return of([]); // Împiedicăm distrugerea fluxului în caz de eroare (ex: backend oprit)
+                    })
+                )        
+            ),
+            // Comparăm JSON-ul stringificat pentru a vedea dacă datele brute s-au modificat
+            distinctUntilChanged((previousBikes, currentBikes) => 
+                JSON.stringify(previousBikes) === JSON.stringify(currentBikes)
+            ),
+            // 4. tap: Un "spion" (side-effect). Preia datele primite de la backend și le 
             // trimite în BehaviorSubject pentru a actualiza starea (bikesSubject.next(bikes)).
             tap((bikes: Bike[]) => this.bikesSubject.next(bikes)), // Actualizăm starea
 
-            // 4. Dacă serverul pică, prindem eroarea, o logăm, și returnăm un array gol (of([])).
-            // Astfel, fluxul RxJS NU "moare" și va continua să încerce din nou peste 5 secunde.
-            catchError(error => {
-                console.error('Eroare la preluarea datelor despre flotă:', error);
-                return of([]); // Împiedicăm distrugerea fluxului în caz de eroare (ex: backend oprit)
-            })
         ).subscribe(); // Declanșează efectiv execuția fluxului.
     }
 
