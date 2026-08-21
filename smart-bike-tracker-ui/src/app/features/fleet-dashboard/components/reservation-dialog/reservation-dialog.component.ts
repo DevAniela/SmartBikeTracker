@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { ReservationService } from '../../../../core/services/reservation.service';
+import { ReservationService, BookedInterval } from '../../../../core/services/reservation.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { overlapValidator } from '../../../../core/validators/reservation.validators';
 
 @Component({
     selector: 'app-reservation-dialog',
@@ -20,7 +21,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     templateUrl: './reservation-dialog.component.html',
     styleUrls: ['./reservation-dialog.component.scss']
 })
-export class ReservationDialogComponent {
+export class ReservationDialogComponent implements OnInit {
     // Injectăm dependențele direct ca proprietăți (Angular 22 style)
     private fb = inject(FormBuilder);
     private reservationService = inject(ReservationService);
@@ -28,14 +29,40 @@ export class ReservationDialogComponent {
     // Prindem ID-ul bicicletei trimis de componenta părinte (Dashboard) la deschiderea modalului
     public data = inject<{ bikeId: string }>(MAT_DIALOG_DATA);
 
+    // Rescanează și actualizează HTML-ul acum
+    private cdr = inject(ChangeDetectorRef);
+
     public errorMessage: string | null = null;
-    public isLoading = false;
+    public isLoading = true; // pt că validările sunt asincrone (depind de o bază de date), 'isLoading = true' până aducem intervalele de la backend, apoi adăugăm validatorul
 
     public reservationForm: FormGroup = this.fb.group({
         date: [new Date(), Validators.required],
         startTime: ['', Validators.required], // ex: "10:00"
         endTime: ['', Validators.required] // ex: "12:00"
     });
+
+    ngOnInit(): void { // Se execută automat o singură dată, imediat după ce componenta (fereastra modală) a fost creată pe ecran.
+        // Aducem rezervările de la backend la deschiderea modalului
+        this.reservationService.getBookedIntervals(this.data.bikeId).subscribe({ // ascultă răspunsul asincron (codul dintre acolade se va executa abia după ce datele au ajuns)
+            next: (intervals: BookedInterval[]) => {
+                // Adăugăm validatorul la nivel de formular
+                // Odată ce serverul a răspuns cu array-ul de intervals (rezervările deja existente), metoda addValidators() e aplicată pe întregul formular (this.reservationForm)
+                // Asta îi spune lui Angular: "Din acest moment, ia toată logica din overlapValidator și aplic-o pe tot grupul de controale"
+                this.reservationForm.addValidators(overlapValidator(intervals));
+                
+                // Forțează formularul să își recalculeze starea (Valid sau Invalid), după adăugarea validatorului
+                this.reservationForm.updateValueAndValidity();
+                this.isLoading = false; // Arată formularul
+
+                this.cdr.detectChanges();
+            },
+            error: (err: HttpErrorResponse) => {
+                this.errorMessage = 'Eroare la preluarea bicicletei';
+                this.isLoading = false;
+            }
+        });
+    }
+
     // Funcție pentru MatDatepicker care blochează selectarea zilelor din trecut
     public dateFilter = (d: Date | null): boolean => { // Union Type
         const date = d || new Date();
@@ -66,7 +93,7 @@ export class ReservationDialogComponent {
 
         // Apelăm backendul
         this.reservationService.createReservation(request).subscribe({
-            next: (response) => {
+            next: () => {
                 // Dacă e 200 OK, închidem modalul și trimitem true părintelui pt a reîncărca lista
                 this.dialogRef.close(true);
             },
@@ -76,8 +103,9 @@ export class ReservationDialogComponent {
                 if(err.status === 400 && err.error?.message) {
                     this.errorMessage = err.error.message;
                 } else {
-                    this.errorMessage = 'A apărul o eroare neașteptată la server.';
+                    this.errorMessage = 'A apărut o eroare neașteptată la server.';
                 }
+                this.cdr.detectChanges();
             }
         });
     }

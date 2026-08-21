@@ -1,10 +1,15 @@
 <h2 mat-dialog-title>Rezervă Bicicleta</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="reservationForm" class="reservation-form">
+  <!-- Mesaj cât timp se încarcă rezervările -->
+   @if (isLoading && !errorMessage) {
+    <p>Se verifică disponibilitatea...</p>
+   }
+
+  <form [formGroup]="reservationForm" class="reservation-form" [style.display]="isLoading ? 'none' : 'block'">
     
     @if (errorMessage) {
-      <div class="error-banner">
+      <div class="error-banner" style="color: red; margin-bottom: 1rem;">
         {{ errorMessage }}
       </div>
     }
@@ -25,6 +30,19 @@
       <mat-label>Ora Final</mat-label>
       <input matInput type="time" formControlName="endTime">
     </mat-form-field>
+
+    <!-- Zona de erori custom de la validator -->
+     @if (reservationForm.hasError('invalidRange') && reservationForm.touched) {
+      <mat-error style="display: block; margin-top: -10px; margin-bottom: 10px;">
+        Ora de final ar trebui să fie după ora de început!
+      </mat-error>
+     }
+
+     @if (reservationForm.hasError('overlappingReservation') && reservationForm.touched) {
+      <mat-error style="display: block; margin-top: -10px; margin-bottom: 10px;">
+        <strong>Bicicleta este deja rezervată</strong> în acest interval! Te rugăm să alegi o altă oră.
+      </mat-error>
+     }
 
   </form>
 </mat-dialog-content>
