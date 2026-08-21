@@ -36,6 +36,13 @@ export class ReservationDialogComponent {
         startTime: ['', Validators.required], // ex: "10:00"
         endTime: ['', Validators.required] // ex: "12:00"
     });
+    // Funcție pentru MatDatepicker care blochează selectarea zilelor din trecut
+    public dateFilter = (d: Date | null): boolean => { // Union Type
+        const date = d || new Date();
+        const today = new Date(); // momentul exact de acum
+        today.setHours(0, 0, 0, 0);
+        return date >= today;
+    };
 
     public onSubmit(): void {
         if(this.reservationForm.invalid) return;

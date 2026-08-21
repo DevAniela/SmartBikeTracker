@@ -11,8 +11,8 @@
 
     <mat-form-field appearance="fill">
       <mat-label>Alege Data</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="date">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter" formControlName="date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle> <!-- Desenează iconița mică de calendar în partea dreaptă a input-ului (matSuffix) -->
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
