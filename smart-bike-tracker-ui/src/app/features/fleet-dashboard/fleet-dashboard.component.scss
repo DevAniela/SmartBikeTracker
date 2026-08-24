@@ -80,6 +80,32 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(231, 76, 60, 0.15);
     }
+
+    /* Stil bicicletă în utilizare */
+    &.in-use-card {
+        border: 2px solid #ffc107;
+        background-color: #fff8e1;
+    }
+
+    /* Stil badge-uri de lângă nume */
+    .status-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+    vertical-align: middle;
+    font-weight: 500;
+    
+        &.alert-badge {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        &.in-use-badge {
+            background-color: #ffc107;
+            color: black;
+        }
+    }
 }
 
 .text-danger {

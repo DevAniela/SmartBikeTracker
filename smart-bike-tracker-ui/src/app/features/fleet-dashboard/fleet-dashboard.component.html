@@ -20,8 +20,19 @@
 
     <div class="bike-grid">
         @for (bike of getVisibleBikes(bikes); track bike.id) {
-        <div class="bike-card" [class.alert-card]="bike.hasAlert">
-            <h2>{{ bike.name }}</h2>
+        <div class="bike-card"
+            [class.alert-card]="bike.hasAlert"
+            [class.in-use-card]="bike.isCurrentlyInUse && !bike.hasAlert">
+
+            <h2>
+                {{ bike.name }}
+                <!-- Badge-uri de status lângă nume -->
+                 @if (bike.hasAlert) {
+                    <span class="status-badge alert-badge">Service necesar</span>
+                 } @else if (bike.isCurrentlyInUse) {
+                    <span class="status-badge in-use-badge">În utilizare</span>
+                 }
+            </h2>
 
             <span class="bike-type-badge">{{ bike.type }}</span>
 
