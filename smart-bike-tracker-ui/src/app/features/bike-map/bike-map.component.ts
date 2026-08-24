@@ -85,7 +85,11 @@ export class BikeMapComponent implements OnInit {
       // Setăm conținutul (nume, baterie, buton)
       popupContainer.innerHTML = `<h3 style="margin: 0 0 8px 0;">${bike.name}</h3>
       <p style="margin: 0 0 12px 0;">Baterie: <strong>${bike.battery.percentage}%</strong></p>
-      <button class="mat-primary-like-btn" id="btn-reserve-${bike.id}">Rezervă Bicicleta</button>`;
+      <button class="mat-primary-like-btn" 
+                id="btn-reserve-${bike.id}"
+                ${ bike.hasAlert ? 'disabled style="background-color: #9e9e9e; cursor: not-allowed;"' : '' }>
+              ${ bike.hasAlert ? 'Indisponibilă' : 'Rezervă Bicicleta' }
+      </button>`;
       
       // Legăm evenimentul de click de metoda din Angular
       const reserveBtn = popupContainer.querySelector(`#btn-reserve-${bike.id}`);

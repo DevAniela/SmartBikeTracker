@@ -49,8 +49,8 @@
                 </p>
 
                 <div class="card-actions">
-                    <button mat-flat-button color="primary" (click)="openReservationDialog(bike.id)">
-                        Rezervare
+                    <button mat-flat-button color="primary" (click)="openReservationDialog(bike.id)" [disabled]="bike.hasAlert">
+                        {{ bike.hasAlert ? 'Indisponibilă' : 'Rezervare' }}
                     </button>
                 </div>
 
