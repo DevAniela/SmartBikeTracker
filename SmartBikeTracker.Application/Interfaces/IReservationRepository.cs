@@ -15,4 +15,7 @@ public interface IReservationRepository
 
     // Actualizează o rezervare (ex: când îi schimbăm statusul)
     Task UpdateAsync(Reservation reservation);
+
+    // Ne dă rezervările active în acest moment
+    Task<IEnumerable<Reservation>> GetOngoingReservationsAsync();
 }

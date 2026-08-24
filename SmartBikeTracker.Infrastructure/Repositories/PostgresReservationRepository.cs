@@ -36,4 +36,18 @@ public class PostgresReservationRepository : IReservationRepository
         _dbContext.Reservations.Update(reservation);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Reservation>> GetOngoingReservationsAsync()
+    {
+        var now = DateTime.UtcNow;
+
+        // Căutăm rezervările care nu s-au terminat și nu au fost anulate (au Active status, nu sunt Cancelled sau Completed)
+        // Au început deja
+        // Nu s-au terminat încă
+        return await _dbContext.Reservations
+            .Where(r => r.Status == ReservationStatus.Active
+                    && r.StartTime <= now
+                    && r.EndTime >= now)
+            .ToListAsync();
+    }
 }
