@@ -32,38 +32,49 @@ export class BikeMapComponent implements OnInit {
   // Acest array va conține markerii
   public layers: L.Layer[] = [];
 
-  // Pictograma pt bicicletă (doar HTML și CSS)
-  private bikeIcon = L.divIcon({
-    html: `<div class="bike-marker">🚲</div>`,
-    className: 'custom-leaflet-icon',
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -18], // De unde apare popup-ul față de centrul iconiței
-  });
-
+  
   ngOnInit(): void {
     // Dacă polling-ul nu e pornit global, trebuie să ne asigurăm că îl pornim când intrăm pe hartă
     this.bikeApiService.startPolling();
-
+    
     // Ne abonăm la fluxul existent de biciclete din serviciu
     // Ascultăm schimbările de la polling
     this.bikeApiService.bikes$.subscribe((bikes) => {
-
+      
       if (bikes && bikes.length > 0) {
         // Imediat ce vin de la server, le dăm niște coordonate random din București
         const bikesWithDummyCoordinates = this.generateDummyCoordinates(bikes);
-  
+        
         // Transformăm bicicletele în Markere Leaflet
         this.generateMarkers(bikesWithDummyCoordinates);
       }
     });
   }
-
+  
   // Funcție care pune markeri pe hartă
   private generateMarkers(bikes: Bike[]): void {
     this.layers = bikes.map(bike => {
+      
+      // Calculăm clasa CSS dinamică pt iconiță
+      let markerStatusClass = '';
+      if(bike.hasAlert) {
+        markerStatusClass = 'marker-alert';
+      } else if (bike.isCurrentlyInUse) {
+        markerStatusClass = 'marker-in-use';
+      }
+      
+      // Creăm pictograma pt această bicicletă, inserând clasa în HTML
+      const dynamicIcon = L.divIcon({
+        html: `<div class="bike-marker ${markerStatusClass}">🚲</div>`,
+        className: 'custom-leaflet-icon', // Containerul Leaflet rămâne transparent
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -18], // De unde apare popup-ul față de centrul iconiței
+      });
+
+      // Creăm markerul folosind pictograma dinamică
       const marker = L.marker([bike.latitude, bike.longitude], {
-        icon: this.bikeIcon,
+        icon: dynamicIcon,
         title: bike.name
       });
 

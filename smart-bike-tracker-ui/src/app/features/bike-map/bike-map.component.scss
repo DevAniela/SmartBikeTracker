@@ -27,6 +27,21 @@
     transform: scale(1.1);
     background-color: #e0f7fa;
   }
+
+  /* Stilurile pt STĂRILE DINAMICE */
+  &.marker-alert {
+    border-color: #f44336;
+    background-color: #ffebee;
+
+    &:hover { background-color: #ffcdd2; }
+  }
+
+  &.marker-in-use {
+    border-color: #ffc107;
+    background-color: #fff8e1;
+
+    &:hover { background-color: #ffecb3; }
+  }
 }
 
 // CSS pentru pop-up și butonul din interior
