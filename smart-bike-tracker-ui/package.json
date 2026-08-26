@@ -20,6 +20,8 @@
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
     "@bluehalo/ngx-leaflet": "^22.0.0",
+    "angular-calendar": "^0.32.2",
+    "date-fns": "^4.4.0",
     "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
