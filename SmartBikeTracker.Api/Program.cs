@@ -3,6 +3,7 @@ using SmartBikeTracker.Application.UseCases;
 using SmartBikeTracker.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SmartBikeTracker.Infrastructure;
+using SmartBikeTracker.Api.BackgroundJobs;
 
 // Composition Root
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,10 @@ builder.Services.AddScoped<ICreateReservationUseCase, CreateReservationUseCase>(
 builder.Services.AddTransient<GetFleetStatusUseCase>();
 builder.Services.AddTransient<UpdateBikeTelemetryUseCase>();
 builder.Services.AddTransient<GetBikeBookedIntervalsUseCase>();
+
+// Pentru simularea descărcării bateriei
+builder.Services.AddScoped<SimulateTelemetryDataUseCase>();
+builder.Services.AddHostedService<TelemetrySimulatorService>();  // Serviciu de fundal
 
 // Aici se creează instanța aplicației web
 

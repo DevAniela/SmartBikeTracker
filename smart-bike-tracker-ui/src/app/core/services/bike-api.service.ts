@@ -33,7 +33,7 @@ export class BikeApiService implements OnDestroy {
 
         // RxJS Polling Magic
         // 1. timer(0, 60000): Emite o valoare IMEDIAT (0ms), apoi la fiecare 60 secunde.
-        this.pollingSubscription = timer(0, 60000).pipe(
+        this.pollingSubscription = timer(0, 5000).pipe(
             // 2. switchMap: Inima polling-ului. Când timer-ul "ticăie", switchMap declanșează apelul HTTP.
             // Dacă a trecut intervalul de 60s, dar request-ul HTTP anterior nu s-a terminat,
             // switchMap anulează request-ul vechi și pornește unul nou.
