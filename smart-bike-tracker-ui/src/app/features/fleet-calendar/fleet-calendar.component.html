@@ -1,0 +1,54 @@
+<div class="calendar-container">
+  <header class="page-header">
+    <h1>Calendar Rezervări</h1>
+    <p>Vizualizare interactivă a disponibilității flotei</p>
+  </header>
+
+  <!-- Controale pentru navigare -->
+  <div class="calendar-controls">
+    <div class="time-navigation">
+      <button mat-stroked-button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">
+        Înapoi
+      </button>
+      <button mat-stroked-button mwlCalendarToday [(viewDate)]="viewDate">
+        Astăzi
+      </button>
+      <button mat-stroked-button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">
+        Înainte
+      </button>
+    </div>
+
+    <h2 class="current-date-title">{{ viewDate | date:'MMMM yyyy' }}</h2>
+
+    <mat-button-toggle-group [value]="view" (change)="setView($event.value)">
+      <mat-button-toggle [value]="CalendarView.Month">Lună</mat-button-toggle>
+      <mat-button-toggle [value]="CalendarView.Week">Săptămână</mat-button-toggle>
+      <mat-button-toggle [value]="CalendarView.Day">Zi</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Randarea calendarului propriu-zis -->
+  <div class="calendar-wrapper">
+    @if (view === CalendarView.Month) {
+      <mwl-calendar-month-view 
+        [viewDate]="viewDate" 
+        [events]="events"
+        [locale]="locale">
+      </mwl-calendar-month-view>
+    }
+    @if (view === CalendarView.Week) {
+      <mwl-calendar-week-view 
+        [viewDate]="viewDate" 
+        [events]="events"
+        [locale]="locale">
+      </mwl-calendar-week-view>
+    }
+    @if (view === CalendarView.Day) {
+      <mwl-calendar-day-view 
+        [viewDate]="viewDate" 
+        [events]="events"
+        [locale]="locale">
+      </mwl-calendar-day-view>
+    }
+  </div>
+</div>
