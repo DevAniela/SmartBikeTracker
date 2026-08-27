@@ -9,6 +9,22 @@
     p { margin: 0; color: #7f8c8d; }
   }
 
+  .filter-section {
+    margin-bottom: 1rem;
+
+    .bike-selector {
+      width: 100%;
+      max-width: 350px;
+    }
+  }
+
+  ::ng-deep .cal-event {
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+  }
+
   .calendar-controls {
     display: flex;
     justify-content: space-between;

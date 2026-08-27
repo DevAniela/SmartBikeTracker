@@ -4,6 +4,18 @@
     <p>Vizualizare interactivă a disponibilității flotei</p>
   </header>
 
+  <!-- Dropdown selector de biciclete -->
+   <div class="filter-section">
+    <mat-form-field appearance="outline" class="bike-selector">
+      <mat-label>Selectează bicicleta</mat-label>
+      <mat-select [formControl]="selectedBikeControl">
+        @for (bike of bikes; track bike.id) {
+          <mat-option [value]="bike.id">{{ bike.name }} ({{ bike.type }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+   </div>
+
   <!-- Controale pentru navigare -->
   <div class="calendar-controls">
     <div class="time-navigation">

@@ -1,8 +1,13 @@
-import { Component, LOCALE_ID, Injectable } from '@angular/core';
+import { Component, LOCALE_ID, Injectable, OnInit, inject } from '@angular/core';
 import { CommonModule, registerLocaleData, formatDate } from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
 import { 
     CalendarView, 
     CalendarEvent,
@@ -15,6 +20,11 @@ import {
     CalendarDateFormatter,
     DateFormatterParams
 } from 'angular-calendar';
+
+import { BikeApiService } from '../../core/services/bike-api.service';
+import { ReservationService } from '../../core/services/reservation.service';
+import { Bike } from '../../core/models/bike.model';
+import { interval } from 'rxjs';
 
 // Înregistrăm limba română în Angular
 registerLocaleData(localeRo, 'ro');
@@ -39,8 +49,11 @@ export class CustomDateFormatter extends CalendarDateFormatter {
     standalone: true,
     imports: [
         CommonModule,
+        ReactiveFormsModule,
         MatButtonModule,
         MatButtonToggleModule,
+        MatSelectModule,
+        MatFormFieldModule,
         // Directive pentru navigația în timp (butoanele)
         CalendarPreviousViewDirective,
         CalendarNextViewDirective,
@@ -59,7 +72,10 @@ export class CustomDateFormatter extends CalendarDateFormatter {
     templateUrl: './fleet-calendar.component.html',
     styleUrls: ['./fleet-calendar.component.scss']
 })
-export class FleetCalendarComponent {
+export class FleetCalendarComponent implements OnInit {
+    private bikeApiService = inject(BikeApiService);
+    private reservationService = inject(ReservationService);
+
     // Setup-ul inițial pentru calendar
     public view: CalendarView = CalendarView.Week;
     public CalendarView = CalendarView; // Expunem enum-ul către HTML
@@ -68,8 +84,43 @@ export class FleetCalendarComponent {
     // Variabilă de limbă pe care o vom trimite către HTML
     public locale: string = 'ro';
 
-    // Momentan lăsăm array-ul gol. Îl vom umple cu date de la backend.
+    public bikes: Bike[] = [];
+    public selectedBikeControl = new FormControl<string>('');
     public events: CalendarEvent[] = [];
+
+    ngOnInit() {
+        this.bikeApiService.startPolling();
+
+        // 1. Populăm dropdown-ul și selectăm prima bicicletă
+        this.bikeApiService.bikes$.subscribe(bikes => {
+            this.bikes = bikes;
+            if (bikes.length > 0 && !this.selectedBikeControl.value) {
+                this.selectedBikeControl.setValue(bikes[0].id);
+            }
+        });
+
+        // 2. Ascultăm modificările ca să cerem rezervările pt bicicleta aleasă
+        this.selectedBikeControl.valueChanges.subscribe(bikeId => {
+            if(bikeId) this.loadReservations(bikeId);
+        });
+    }
+
+    private loadReservations(bikeId: string) {
+        this.reservationService.getBookedIntervals(bikeId).subscribe(intervals => {
+            this.events = intervals.map(interval => {
+                return {
+                    start: new Date(interval.startTime),
+                    end: new Date(interval.endTime),
+                    title: `Rezervat (indisponibilă)`,
+                    color: {
+                        primary: '#ffc107',
+                        secondary: '#fff8e1'
+                    },
+                    allDay: false
+                } as CalendarEvent;
+            });
+        });
+    }
 
     // Metodă schimbare vizualizare (lună/saptămână/zi)
     public setView(view: CalendarView) {
