@@ -52,14 +52,16 @@
       <mwl-calendar-week-view 
         [viewDate]="viewDate" 
         [events]="events"
-        [locale]="locale">
+        [locale]="locale"
+        (hourSegmentClicked)="hourSegmentClicked($event)">
       </mwl-calendar-week-view>
     }
     @if (view === CalendarView.Day) {
       <mwl-calendar-day-view 
         [viewDate]="viewDate" 
         [events]="events"
-        [locale]="locale">
+        [locale]="locale"
+        (hourSegmentClicked)="hourSegmentClicked($event)">
       </mwl-calendar-day-view>
     }
   </div>

@@ -27,7 +27,15 @@ export class ReservationDialogComponent implements OnInit {
     private reservationService = inject(ReservationService);
     private dialogRef = inject(MatDialogRef<ReservationDialogComponent>);
     // Prindem ID-ul bicicletei trimis de componenta părinte (Dashboard) la deschiderea modalului
-    public data = inject<{ bikeId: string }>(MAT_DIALOG_DATA);
+    public data = inject<{ bikeId: string, preselectedStartTime?: Date }>(MAT_DIALOG_DATA);
+
+    // Funcție care scoate formatul "10:00" dintr-un obiect Date
+    private getInitialTime(): string {
+        if (!this.data.preselectedStartTime) return '';
+        const hours = this.data.preselectedStartTime.getHours().toString().padStart(2, '0');
+        const minutes = this.data.preselectedStartTime.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
 
     // Rescanează și actualizează HTML-ul acum
     private cdr = inject(ChangeDetectorRef);
@@ -36,8 +44,11 @@ export class ReservationDialogComponent implements OnInit {
     public isLoading = true; // pt că validările sunt asincrone (depind de o bază de date), 'isLoading = true' până aducem intervalele de la backend, apoi adăugăm validatorul
 
     public reservationForm: FormGroup = this.fb.group({
-        date: [new Date(), Validators.required],
-        startTime: ['', Validators.required], // ex: "10:00"
+        // Dacă am primit o dată din calendar, o folosim pe aia. Altfel punem ziua de azi.
+        date: [this.data.preselectedStartTime || new Date(), Validators.required],
+
+        // Folosim funcția de mai sus pentru a completa ora de start
+        startTime: [this.getInitialTime(), Validators.required], // ex: "10:00"
         endTime: ['', Validators.required] // ex: "12:00"
     });
 

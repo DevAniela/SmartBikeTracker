@@ -2,11 +2,13 @@ import { Component, LOCALE_ID, Injectable, OnInit, inject } from '@angular/core'
 import { CommonModule, registerLocaleData, formatDate } from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ReservationDialogComponent } from '../fleet-dashboard/components/reservation-dialog/reservation-dialog.component';
 
 import { 
     CalendarView, 
@@ -75,6 +77,7 @@ export class CustomDateFormatter extends CalendarDateFormatter {
 export class FleetCalendarComponent implements OnInit {
     private bikeApiService = inject(BikeApiService);
     private reservationService = inject(ReservationService);
+    private dialog = inject(MatDialog);
 
     // Setup-ul inițial pentru calendar
     public view: CalendarView = CalendarView.Week;
@@ -125,5 +128,34 @@ export class FleetCalendarComponent implements OnInit {
     // Metodă schimbare vizualizare (lună/saptămână/zi)
     public setView(view: CalendarView) {
         this.view = view;
+    }
+
+    // Metoda pentru click pe un spațiu liber
+    public hourSegmentClicked(event: { date: Date }) {
+        const selectedBikeId = this.selectedBikeControl.value;
+        if (!selectedBikeId) return;
+
+        // Blocăm rezervările în trecut
+        if (event.date < new Date()) {
+            alert('Nu poți face o rezervare în trecut!');
+            return;
+        }
+
+        // Deschidem dialogul
+        const dialogRef = this.dialog.open(ReservationDialogComponent, {
+            width: '400px',
+            data: { 
+                bikeId: selectedBikeId,
+                preselectedStartTime: event.date // Îi trimitem ora pe care a dat click
+            }
+        });
+
+        // Ascultăm când se închide dialogul.
+        // Dacă utilizatorul a dat "Salvează", reîncărcăm intervalele de la backend ca să apară instant pe calendar
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.loadReservations(selectedBikeId);
+            }
+        });
     }
 }
